@@ -5,6 +5,7 @@ import { AuthProvider } from './features/auth/AuthContext';
 import { ThemeProvider } from './features/settings/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
 import { AppLayout } from './components/layout/AppLayout';
+import { LandingPage } from './features/landing/LandingPage';
 import { AuthPage } from './features/auth/AuthPage';
 import { SchedulesPage } from './features/schedules/SchedulesPage';
 import { BuilderPage } from './features/generator/BuilderPage';
@@ -28,13 +29,15 @@ export const App: React.FC = () => {
           <ToastProvider>
             <BrowserRouter>
               <Routes>
-                {/* Main application workspace - open to all anonymous students immediately */}
-                <Route path="/" element={<AppLayout />}>
-                  <Route index element={<Navigate to="/schedules" replace />} />
-                  <Route path="schedules" element={<SchedulesPage />} />
-                  <Route path="builder" element={<BuilderPage />} />
-                  <Route path="offerings" element={<OfferingsPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
+                {/* Landing / Homepage before entering the workspace */}
+                <Route path="/" element={<LandingPage />} />
+
+                {/* Workspace Application routes */}
+                <Route element={<AppLayout />}>
+                  <Route path="/schedules" element={<SchedulesPage />} />
+                  <Route path="/builder" element={<BuilderPage />} />
+                  <Route path="/offerings" element={<OfferingsPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
                 </Route>
 
                 {/* Optional authentication page */}

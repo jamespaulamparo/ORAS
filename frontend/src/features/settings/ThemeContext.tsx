@@ -340,6 +340,27 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    * When theme changes, course colors automatically transform into the active theme's palette!
    */
   const getSubjectColor = (colorKey?: string | null, index: number = 0): CourseColorStyle => {
+    // If user provided a custom hex color (e.g. #3b82f6)
+    if (colorKey && colorKey.startsWith('#')) {
+      // Calculate perceptual luminance to pick optimal high-contrast text color
+      const hex = colorKey.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16) || 0;
+      const g = parseInt(hex.substring(2, 4), 16) || 0;
+      const b = parseInt(hex.substring(4, 6), 16) || 0;
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      const isLightColor = luminance > 0.55;
+
+      return {
+        id: colorKey,
+        name: 'Custom',
+        bg: colorKey,
+        border: isLightColor ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
+        text: isLightColor ? '#111827' : '#ffffff',
+        tagBg: isLightColor ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.22)',
+        tagText: isLightColor ? '#111827' : '#ffffff',
+      };
+    }
+
     const palette = currentTheme.coursePalette;
     if (colorKey) {
       const match = palette.find(c => c.id === colorKey);

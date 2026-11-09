@@ -11,8 +11,10 @@ import {
   LogIn,
   Menu, 
   X, 
-  Palette
+  Palette,
+  Home
 } from 'lucide-react';
+import { OrasLogo } from '../ui/OrasLogo';
 
 export const AppLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -21,7 +23,8 @@ export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { to: '/schedules', label: 'Schedules', icon: Calendar },
+    { to: '/', label: 'Home', icon: Home },
+    { to: '/schedules', label: 'Timetable', icon: Calendar },
     { to: '/builder', label: 'Build a Schedule', icon: Sparkles },
     { to: '/offerings', label: 'Offerings', icon: BookOpen },
     { to: '/settings', label: 'Settings', icon: Sliders },
@@ -39,19 +42,9 @@ export const AppLayout: React.FC = () => {
       <aside className="hidden md:flex flex-col w-64 border-r border-border-subtle bg-surface px-4 py-5 shrink-0 justify-between">
         <div>
           {/* Logo / Brand header */}
-          <div className="flex items-center gap-2.5 px-2 pb-5 mb-4 border-b border-border-subtle">
-            <div className="w-8 h-8 rounded-md bg-accent text-accent-contrast flex items-center justify-center font-serif font-bold text-sm tracking-wider shadow-soft">
-              SP
-            </div>
-            <div>
-              <span className="font-semibold text-sm tracking-tight text-fg block">
-                Schedule Planner
-              </span>
-              <span className="text-[11px] text-fg-muted block">
-                Timetable Workspace
-              </span>
-            </div>
-          </div>
+          <Link to="/" className="flex items-center gap-2.5 px-2 pb-5 mb-4 border-b border-border-subtle group">
+            <OrasLogo size="md" />
+          </Link>
 
           {/* Navigation Links */}
           <nav className="space-y-1">
@@ -77,33 +70,24 @@ export const AppLayout: React.FC = () => {
           </nav>
         </div>
 
-        {/* User profile & theme switch bottom section */}
+        {/* User profile & session bottom section (Theme controls moved strictly to Settings) */}
         <div className="pt-4 border-t border-border-subtle space-y-3">
-          {/* Theme Quick Selector */}
-          <div className="px-2">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-fg-muted font-semibold flex items-center gap-1">
-                <Palette size={11} /> Theme
-              </span>
-              <span className="text-[10px] text-fg font-medium">
-                {currentTheme?.name}
-              </span>
-            </div>
-            <div className="grid grid-cols-4 gap-1.5">
-              {themes.slice(0, 8).map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  title={t.name}
-                  onClick={() => setTheme(t.key)}
-                  className={`h-5 rounded border transition-all ${
-                    theme === t.key ? 'ring-2 ring-accent scale-105' : 'hover:scale-105 opacity-80'
-                  }`}
-                  style={{ backgroundColor: t.sampleBg, borderColor: t.sampleAccent }}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Active Theme indicator with direct link to Settings */}
+          <Link
+            to="/settings"
+            className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-surface-secondary text-xs transition-colors group"
+          >
+            <span className="text-[11px] text-fg-muted font-medium flex items-center gap-1.5">
+              <span
+                className="w-2.5 h-2.5 rounded-full border shadow-xs"
+                style={{ backgroundColor: currentTheme?.sampleAccent || 'var(--accent)' }}
+              />
+              <span>Theme</span>
+            </span>
+            <span className="text-[11px] text-fg font-semibold group-hover:text-accent transition-colors">
+              {currentTheme?.name}
+            </span>
+          </Link>
 
           {/* User & Optional Sign-in/out */}
           <div className="flex items-center justify-between px-2 pt-2 text-xs border-t border-border-subtle">
@@ -145,12 +129,9 @@ export const AppLayout: React.FC = () => {
 
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between px-4 py-3 bg-surface border-b border-border-subtle">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-accent text-accent-contrast flex items-center justify-center font-bold text-xs">
-            SP
-          </div>
-          <span className="font-medium text-xs text-fg">Schedule Planner</span>
-        </div>
+        <Link to="/" className="flex items-center gap-2">
+          <OrasLogo size="sm" />
+        </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-1.5 rounded-md text-fg-secondary hover:bg-surface-secondary"

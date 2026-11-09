@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32" fill="none">
+  <!-- Minimalist Geometric Clock/Hourglass Icon -->
+  <g transform="translate(2, 2)">
+    <rect x="0" y="0" width="28" height="28" rx="7" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.8"/>
+    <!-- Hourglass / Time Quadrant geometry -->
+    <path d="M7 7L21 21M21 7L7 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="14" cy="14" r="3.2" fill="currentColor"/>
+    <circle cx="14" cy="6" r="1.5" fill="currentColor"/>
+    <circle cx="14" cy="22" r="1.5" fill="currentColor"/>
+  </g>
+  <!-- Sleek Typography: ORAS -->
+  <text x="38" y="21" font-family="'Inter', -apple-system, sans-serif" font-size="18" font-weight="700" letter-spacing="2.5" fill="currentColor">ORAS</text>
+</svg>

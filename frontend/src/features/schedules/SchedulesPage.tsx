@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchWithCsrf } from '../../lib/api';
 import { Workspace, Offering, Course, ConflictCheckResult } from '../../types/planner';
 import { TimetableGrid } from '../../components/timetable/TimetableGrid';
+import { EnrolledCoursesTable } from '../../components/timetable/EnrolledCoursesTable';
 import { ClassFormModal } from '../../components/forms/ClassFormModal';
+import { SettingsModal } from '../settings/SettingsModal';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
+import { useTheme } from '../settings/ThemeContext';
+import { toPng } from 'html-to-image';
 import { 
   Plus, 
   Calendar, 
@@ -13,9 +17,11 @@ import {
   AlertCircle, 
   Printer, 
   Sparkles, 
-  Layers,
-  CheckCircle2,
-  SlidersHorizontal
+  CheckCircle2, 
+  Sliders, 
+  Download, 
+  ChevronDown,
+  Layers
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +29,12 @@ export const SchedulesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { currentTheme } = useTheme();
+
+  // Export container ref
+  const scheduleRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   // View settings
   const [showWeekends, setShowWeekends] = useState(false);
@@ -30,6 +42,7 @@ export const SchedulesPage: React.FC = () => {
 
   // Modal states
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
 
   // Fetch current workspace
@@ -117,7 +130,7 @@ export const SchedulesPage: React.FC = () => {
     if (selectedOffering) {
       await updateOfferingMutation.mutateAsync({
         id: selectedOffering.id,
-        data: formData, // Send entire updated object including course and sessions!
+        data: formData,
       });
     } else {
       await createCourseMutation.mutateAsync(formData);
@@ -127,6 +140,30 @@ export const SchedulesPage: React.FC = () => {
   const handleSelectOffering = (off: Offering) => {
     setSelectedOffering(off);
     setIsClassModalOpen(true);
+  };
+
+  // Export timetable strictly as high-resolution PNG
+  const handleExportPng = async () => {
+    setShowExportMenu(false);
+    if (!scheduleRef.current) return;
+    try {
+      setIsExporting(true);
+      showToast('Rendering timetable image...', 'info');
+      const dataUrl = await toPng(scheduleRef.current, {
+        quality: 0.98,
+        pixelRatio: 2,
+        backgroundColor: currentTheme.isDark ? currentTheme.sampleBg : '#ffffff',
+      });
+      const link = document.createElement('a');
+      link.download = `ORAS_${workspace?.name || 'Timetable'}.png`;
+      link.href = dataUrl;
+      link.click();
+      showToast('Downloaded schedule image', 'success');
+    } catch (err: any) {
+      showToast('Failed to export timetable PNG', 'danger');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Metrics computation
@@ -141,64 +178,80 @@ export const SchedulesPage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto w-full space-y-5">
-      {/* Top Bar: Title & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border-subtle">
+      {/* Top Bar: Title & Consolidated Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border-subtle no-print">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold text-fg">
+            <h1 className="text-xl font-bold text-fg tracking-tight">
               {workspace?.name || 'Class Timetable'}
             </h1>
             {conflictData?.has_conflicts ? (
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-status-danger-surface text-status-danger border border-status-danger-border flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-status-danger-surface text-status-danger border border-status-danger-border flex items-center gap-1">
                 <AlertCircle size={11} /> Overlaps
               </span>
             ) : (
               displayedOfferings.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-status-success-surface text-status-success border border-status-success-border flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-status-success-surface text-status-success border border-status-success-border flex items-center gap-1">
                   <CheckCircle2 size={11} /> Conflict-Free
                 </span>
               )
             )}
           </div>
-          <p className="text-xs text-fg-muted mt-0.5">
+          <p className="text-xs text-fg-muted mt-0.5 font-medium">
             {distinctDays} school day{distinctDays === 1 ? '' : 's'} · {totalUnits > 0 ? `${totalUnits} units · ` : ''}
-            {displayedOfferings.length} scheduled class{displayedOfferings.length === 1 ? '' : 'es'}
+            {displayedOfferings.length} subject{displayedOfferings.length === 1 ? '' : 's'}
           </p>
         </div>
 
-        {/* Action Buttons */}
+        {/* Clean Consolidated Action Group */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* 12h/24h toggle */}
-          <button
-            type="button"
-            onClick={() => setTimeFormat12h(!timeFormat12h)}
-            className="px-2.5 py-1.5 rounded-md border border-border-default bg-surface text-xs font-mono text-fg-secondary hover:text-fg"
-            title="Toggle 12-hour or 24-hour display"
-          >
-            {timeFormat12h ? '12h' : '24h'}
-          </button>
+          {/* Export Dropdown (Schedule only: PNG or PDF) */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              disabled={isExporting}
+            >
+              <Download size={13} />
+              <span>Export</span>
+              <ChevronDown size={12} className="opacity-60" />
+            </Button>
 
-          {/* Weekend Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowWeekends(!showWeekends)}
-            className={`px-2.5 py-1.5 rounded-md border text-xs transition-colors ${
-              showWeekends
-                ? 'bg-accent text-accent-contrast border-accent'
-                : 'border-border-default bg-surface text-fg-secondary hover:text-fg'
-            }`}
-          >
-            {showWeekends ? '7 Days' : '5 Days'}
-          </button>
+            {showExportMenu && (
+              <div className="absolute right-0 mt-1.5 w-48 rounded-lg bg-surface border border-border-default shadow-card py-1 z-50 text-xs">
+                <button
+                  type="button"
+                  onClick={handleExportPng}
+                  className="w-full text-left px-3 py-2 hover:bg-surface-secondary text-fg flex items-center gap-2 transition-colors font-medium"
+                >
+                  <Download size={13} className="text-accent" />
+                  <span>Download as PNG Image</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    window.print();
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-surface-secondary text-fg flex items-center gap-2 transition-colors font-medium"
+                >
+                  <Printer size={13} className="text-accent" />
+                  <span>Print / Save as PDF</span>
+                </button>
+              </div>
+            )}
+          </div>
 
-          {/* Print / Export PDF */}
+          {/* Dedicated Settings Button */}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.print()}
-            title="Print or Save as PDF"
+            onClick={() => setIsSettingsOpen(true)}
+            title="Themes, 12h/24h, 5/7 days, and Account"
           >
-            <Printer size={14} /> Print
+            <Sliders size={13} />
+            <span>Settings</span>
           </Button>
 
           {/* Generator Shortcut */}
@@ -207,7 +260,8 @@ export const SchedulesPage: React.FC = () => {
             size="sm"
             onClick={() => navigate('/builder')}
           >
-            <Sparkles size={14} /> Generator
+            <Sparkles size={13} />
+            <span>Generator</span>
           </Button>
 
           {/* Add Class Button */}
@@ -219,15 +273,16 @@ export const SchedulesPage: React.FC = () => {
               setIsClassModalOpen(true);
             }}
           >
-            <Plus size={14} /> Add Class
+            <Plus size={14} />
+            <span>Add Class</span>
           </Button>
         </div>
       </div>
 
       {/* Conflict Diagnostic Box */}
       {conflictData?.has_conflicts && (
-        <div className="p-4 rounded-lg bg-status-danger-surface border border-status-danger-border">
-          <div className="flex items-center gap-2 text-status-danger text-xs font-semibold mb-1">
+        <div className="p-4 rounded-lg bg-status-danger-surface border border-status-danger-border no-print">
+          <div className="flex items-center gap-2 text-status-danger text-xs font-bold mb-1">
             <AlertCircle size={15} />
             <span>Time Overlap Detected ({conflictData.conflict_count})</span>
           </div>
@@ -242,19 +297,19 @@ export const SchedulesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Timetable Display */}
+      {/* Printable Schedule Area */}
       {isLoading ? (
-        <div className="p-16 text-center text-xs text-fg-muted">
+        <div className="p-16 text-center text-xs text-fg-muted font-medium">
           Loading timetable...
         </div>
       ) : displayedOfferings.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border-default p-12 text-center bg-surface/50">
+        <div className="rounded-xl border border-dashed border-border-default p-12 text-center bg-surface/50">
           <div className="w-10 h-10 rounded-full bg-surface-secondary text-fg-muted flex items-center justify-center mx-auto mb-3">
             <Calendar size={20} />
           </div>
-          <h3 className="text-sm font-medium text-fg">Your timetable is empty</h3>
+          <h3 className="text-sm font-bold text-fg">Your timetable is empty</h3>
           <p className="text-xs text-fg-muted max-w-sm mx-auto mt-1 mb-4">
-            Add your subjects and sections manually or import your schedule spreadsheet to visualize your weekly classes.
+            Add your subjects and sections manually or run the generator to visualize your weekly classes.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Button
@@ -277,13 +332,32 @@ export const SchedulesPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div id="schedule-export-container" ref={scheduleRef} className="space-y-4 p-1">
+          {/* Clean watermark / header for exported PNG/print */}
+          <div className="hidden print:flex items-center justify-between pb-3 border-b border-border-default">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-fg">ORAS Timetable</h2>
+              <span className="text-xs text-fg-muted font-medium">
+                {workspace?.name} · {totalUnits} Units · {distinctDays} School Days
+              </span>
+            </div>
+            <span className="text-xs font-mono text-fg-muted">oras.schedule</span>
+          </div>
+
+          {/* Timetable Grid with fixed 8am/5pm clipping & 100% width responsive layout */}
           <TimetableGrid
             offerings={displayedOfferings}
             conflicts={conflictData?.conflicts || []}
             onSelectOffering={handleSelectOffering}
             showWeekends={showWeekends}
             timeFormat12h={timeFormat12h}
+          />
+
+          {/* Color-Coded Enrolled Classes Summary Table on the bottom of the schedule */}
+          <EnrolledCoursesTable
+            offerings={displayedOfferings}
+            onEditOffering={handleSelectOffering}
+            onDeleteOffering={(id) => deleteOfferingMutation.mutateAsync(id)}
           />
         </div>
       )}
@@ -302,6 +376,16 @@ export const SchedulesPage: React.FC = () => {
               }
             : null
         }
+      />
+
+      {/* Consolidated Dedicated Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        timeFormat12h={timeFormat12h}
+        setTimeFormat12h={setTimeFormat12h}
+        showWeekends={showWeekends}
+        setShowWeekends={setShowWeekends}
       />
     </div>
   );

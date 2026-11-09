@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.66.0",
+    "@types/three": "^0.187.0",
     "clsx": "^2.1.1",
+    "framer-motion": "^14.11.1",
     "html-to-image": "^1.11.11",
     "lucide-react": "^1.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
