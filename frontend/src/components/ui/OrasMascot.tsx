@@ -13,36 +13,36 @@ export const OrasMascot: React.FC<OrasMascotProps> = ({
   withSpeechBubble,
 }) => {
   const sizeMap = {
-    sm: 'w-16 h-16',
-    md: 'w-24 h-24 sm:w-28 sm:h-28',
-    lg: 'w-36 h-36 sm:w-44 sm:h-44',
-    xl: 'w-48 h-48 sm:w-56 sm:h-56',
+    sm: 'w-14 h-14',
+    md: 'w-20 h-20 sm:w-24 sm:h-24',
+    lg: 'w-32 h-32 sm:w-40 sm:h-40',
+    xl: 'w-44 h-44 sm:w-52 sm:h-52',
   }[size];
 
   return (
     <div className={`relative inline-flex items-center gap-3 select-none ${className}`}>
-      {/* Animated Floating Mascot */}
+      {/* Timey - Animated Floating Mascot */}
       <motion.div
         animate={{
-          y: [0, -6, 0],
-          rotate: [0, 1.5, 0, -1.5, 0],
+          y: [0, -5, 0],
+          rotate: [0, 1, 0, -1, 0],
         }}
         transition={{
           repeat: Infinity,
-          duration: 4,
+          duration: 3.6,
           ease: 'easeInOut',
         }}
         className={`relative ${sizeMap} shrink-0`}
       >
         <img
           src="/oras-mascot.svg"
-          alt="Tik-Tik the ORAS Mascot"
-          className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform"
+          alt="Timey - The ORAS Companion"
+          className="w-full h-full object-contain drop-shadow-sm hover:scale-105 transition-transform"
           draggable={false}
         />
       </motion.div>
 
-      {/* Optional Animated Speech Bubble */}
+      {/* Speech Bubble */}
       {withSpeechBubble && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9, x: -6 }}
@@ -50,8 +50,8 @@ export const OrasMascot: React.FC<OrasMascotProps> = ({
           transition={{ duration: 0.3 }}
           className="relative max-w-xs p-3 rounded-2xl bg-surface border border-border-default shadow-soft text-xs text-fg leading-snug"
         >
-          {/* Bubble tail pointing left to mascot */}
           <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-surface border-l border-b border-border-default rotate-45" />
+          <p className="font-semibold text-accent text-[11px] mb-0.5">Timey says:</p>
           <p className="font-medium relative z-10">{withSpeechBubble}</p>
         </motion.div>
       )}

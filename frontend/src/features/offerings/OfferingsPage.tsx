@@ -4,6 +4,7 @@ import { fetchWithCsrf } from '../../lib/api';
 import { Workspace, Course, Offering, ConflictCheckResult } from '../../types/planner';
 import { Button } from '../../components/ui/Button';
 import { ClassFormModal } from '../../components/forms/ClassFormModal';
+import { SpreadsheetImportModal } from './SpreadsheetImportModal';
 import { useTheme } from '../settings/ThemeContext';
 import { 
   BookOpen, 
@@ -29,6 +30,7 @@ export const OfferingsPage: React.FC = () => {
   const { showToast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingOffering, setEditingOffering] = useState<Offering | null>(null);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,9 +156,9 @@ export const OfferingsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/builder')}
+            onClick={() => setIsImportModalOpen(true)}
           >
-            <Upload size={14} /> Import File
+            <Upload size={14} /> Import Spreadsheet
           </Button>
 
           <Button
@@ -355,6 +357,32 @@ export const OfferingsPage: React.FC = () => {
             ? { course: editingCourse || undefined, offering: editingOffering }
             : null
         }
+      />
+
+      {/* Spreadsheet / CSV Importer Modal (Milestone 2) */}
+      <SpreadsheetImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportOfferings={async (rows) => {
+          for (const row of rows) {
+            await createCourseMutation.mutateAsync({
+              course_code: row.course_code,
+              course_title: row.course_title,
+              section_code: row.section_code,
+              units: parseFloat(row.units) || 3.0,
+              instructor: row.instructor,
+              default_room: row.room,
+              meeting_sessions: [
+                {
+                  day_of_week: row.day_of_week,
+                  start_time: row.start_time,
+                  end_time: row.end_time,
+                  room: row.room,
+                },
+              ],
+            });
+          }
+        }}
       />
     </div>
   );

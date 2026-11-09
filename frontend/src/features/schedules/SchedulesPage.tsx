@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
 import { useTheme } from '../settings/ThemeContext';
 import { toPng } from 'html-to-image';
+import { downloadICalendarFile } from '../../lib/icalendar';
 import { 
   Plus, 
   Calendar, 
@@ -274,6 +275,18 @@ export const SchedulesPage: React.FC = () => {
                 >
                   <Printer size={13} className="text-accent" />
                   <span>Print / Save as PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowExportMenu(false);
+                    downloadICalendarFile(displayedOfferings, workspace?.name || 'ORAS_Timetable');
+                    showToast('Downloaded .ics file for Google/Apple Calendar', 'success');
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-surface-secondary text-fg flex items-center gap-2 transition-colors font-medium border-t border-border-subtle"
+                >
+                  <Calendar size={13} className="text-accent" />
+                  <span>Export iCal (.ics)</span>
                 </button>
               </div>
             )}

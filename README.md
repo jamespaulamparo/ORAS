@@ -15,17 +15,21 @@
 Students often struggle with confusing section offerings, overlapping prerequisites, or 4-hour dead campus gaps. ORAS provides a fast, zero-friction interface to visualize your semester, detect time conflicts instantly, and export a clean schedule for your phone lockscreen or binder.
 
 ### Key Highlights
+- **Universal, Free & Open Source:** 100% free forever, no subscription gates, zero tracking or telemetry, completely private and client-side safe. Built for college & university students worldwide, irregular students, working scholars, and busy individuals.
 - **Zero Friction & Anonymous by Default:** No registration or login required. Your classes persist automatically in your browser session.
-- **Strict Half-Hour Increments:** Class times snap to `:00` and `:30` (e.g. `08:30 – 10:00`), preventing input typos and matching university scheduling periods.
-- **DMMMSU-NLUC BSIS Curriculum Grounding:** Preloaded with the complete 4-year curriculum of Bachelor of Science in Information Systems (BSIS) from Don Mariano Marcos Memorial State University – North La Union Campus (2026), including all General Education, computing majors, and electives with instant autocomplete.
+- **Automated Schedule Generator (Milestone 3):** Deterministic backtracking constraint solver that tests all section combinations, prunes collisions (`[start, end)` half-open interval arithmetic), scores alternatives based on your personal lifestyle preferences (Morning Bird vs. Afternoon Focus, Compact Days, Free Fridays, Gap Minimization), and applies the optimal schedule in 1 click.
+- **Spreadsheet & CSV Batch Importer (Milestone 2):** Drag-and-drop `.csv`, `.tsv`, `.txt` files or paste raw spreadsheet rows directly from Google Sheets or Excel with automatic header detection, validation, and batch insertion.
+- **Full Production Exports (PNG, PDF, iCalendar):** Export your clean weekly schedule as a high-resolution PNG image, print-optimized clean PDF, or universal standard `.ics` (iCalendar) file compatible with Google Calendar, Apple Calendar, and Outlook.
+- **Click-to-Schedule on Empty Slots:** Tap or click any blank spot on the timetable grid; ORAS automatically calculates the time offset, snaps down to `:00` or `:30`, and presents a prefilled 1-hour session dialog.
+- **Strict Half-Hour Increments:** Class times snap to `:00` and `:30` (e.g. `08:30 – 10:00`), preventing input typos and matching standard academic periods.
+- **DMMMSU-NLUC & General Curricula:** Preloaded with BSIS curriculum offerings, common course codes, plus universal custom course support.
 - **Dual Sidebar Architecture:** Inside the Schedule Workspace (`/schedules`), an Ellipsus-inspired focused tool rail puts subject management, diagnostic conflict indicators, view toggles, and exports directly at your fingertips, while the main sidebar handles general app navigation.
-- **Micro-Animations & Scroll Dynamics:** Framer Motion scroll-linked timepiece/sandglass animation, rotating academic reflections ticker every 3.8s, and tactile button tap feedback (`whileTap={{ scale: 0.97 }}`).
+- **Timey Mascot & Micro-Animations:** Baymax-inspired friendly clock companion **Timey**, Framer Motion scroll-linked timepiece dynamics, rotating reflections ticker, and tactile tap feedback (`whileTap={{ scale: 0.97 }}`).
 - **Dedicated Academic Research Page (`/about`):** Detailed research on the enrollment scramble, irregular student dilemmas, transit gap penalties, and why deterministic typographic software outperforms AI chatbots.
 - **Mathematical Half-Open Interval Validation:** Classes ending at 10:30 and starting at 10:30 do not trigger false conflicts. Overlaps are highlighted with exact diagnostic messages.
-- **16 Ellipsus-Inspired Themes:** 8 rich Dark themes (Leatherbound, Red Velvet, Ultra Dark, Midnight, Graphite, Espresso, Evergreen, Sepia) and 8 Light themes (Paper, Maple, Pumpkin Spice, Valentine, Roseglow, Sage, Sandstone, Minimal).
+- **16 Ellipsus-Inspired Themes:** 8 rich Dark themes (Leatherbound, Red Velvet, Ultra Dark, Midnight, Graphite, Espresso, Evergreen, Sepia) and 8 Light themes (Sage [Default], Paper, Maple, Pumpkin Spice, Valentine, Roseglow, Sandstone, Minimal).
 - **Enrolled Classes Summary Table:** Color-coded summary below the timetable grid listing subject codes, titles, section codes, unit counts, meeting times, and rooms.
-- **Schedule-Only Export (PNG & PDF):** Export strictly your weekly timetable as a high-resolution PNG image or clean printable PDF without website navigation chrome.
-- **Fully Responsive:** 100% width on mobile screens with zero awkward horizontal scrolling, plus a 1-click single-day inspector view.
+- **Fully Responsive:** 100% width on mobile screens with zero horizontal scrolling, plus a 1-click single-day inspector view.
 
 ---
 
@@ -36,7 +40,7 @@ Students often struggle with confusing section offerings, overlapping prerequisi
 | **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Plus Jakarta Sans |
 | **Backend** | Python 3.14, Django 5.x, Django REST Framework, SQLite / PostgreSQL |
 | **Styling** | Semantic CSS Variables, 16 Ellipsus Themes, Custom Hex Color Picker |
-| **Testing** | Django TestCase (`Ran 10 tests in 1.24s OK`) |
+| **Testing** | Django TestCase (`Ran 12 tests in 1.27s OK`) |
 
 ---
 

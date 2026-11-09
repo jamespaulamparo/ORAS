@@ -315,7 +315,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (saved && THEMES.some(t => t.key === saved)) {
       return saved;
     }
-    return 'leatherbound'; // Leatherbound dark default
+    return 'sage'; // White background with calming sage green accents default
   });
 
   const currentTheme = THEMES.find(t => t.key === theme) || THEMES[0];

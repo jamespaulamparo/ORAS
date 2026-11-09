@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { 
   ArrowRight, 
   Clock, 
@@ -10,13 +10,16 @@ import {
   Calendar,
   Layers,
   Sparkles,
-  Compass
+  Compass,
+  GraduationCap,
+  Briefcase,
+  ShieldCheck,
+  CheckCircle2,
+  Users
 } from 'lucide-react';
 import { useTheme } from '../settings/ThemeContext';
 import { OrasLogo } from '../../components/ui/OrasLogo';
 import { LiveHeroClock } from '../../components/ui/LiveHeroClock';
-import { OrasMascot } from '../../components/ui/OrasMascot';
-import { DMMMSU_NLUC_BSIS_CURRICULUM } from '../../lib/commonCourses';
 
 // Positive, hopeful reflections on time management, student well-being, and QOL (rotates slowly: every 9 seconds)
 const TIME_QUOTES = [
@@ -51,58 +54,30 @@ export const LandingPage: React.FC = () => {
   const previewOpacity = useTransform(previewScroll, [0, 0.4], [0.5, 1]);
   const previewY = useTransform(previewScroll, [0, 1], [30, 0]);
 
-  // Authentic DMMMSU-NLUC BSIS 2nd Year Sample Schedule
+  // Authentic Sample Schedule Demonstrating Weekly Rhythm
   const sampleSchedule = [
     { day: 'Mon', dayFull: 'Monday', items: [
-      { code: 'CC 104', title: 'Data Structures and Algorithms', time: '08:30 – 10:00', room: 'IT Lab 1', colorIdx: 0 },
-      { code: 'IS 103', title: 'Information Management (Database 1)', time: '10:30 – 12:00', room: 'Hall 3', colorIdx: 1 },
-      { code: 'CC 105', title: 'Discrete Mathematics', time: '13:30 – 15:00', room: 'Room 204', colorIdx: 2 },
+      { code: 'CS 101', title: 'Data Structures & Algorithms', time: '08:30 – 10:00', room: 'Lab 1', colorIdx: 0 },
+      { code: 'MATH 201', title: 'Linear Algebra & Matrices', time: '10:30 – 12:00', room: 'Hall 3', colorIdx: 1 },
+      { code: 'IS 103', title: 'Database Systems & SQL', time: '13:30 – 15:00', room: 'Room 204', colorIdx: 2 },
     ]},
     { day: 'Tue', dayFull: 'Tuesday', items: [
-      { code: 'GE 107', title: 'Science, Technology, and Society', time: '09:00 – 10:30', room: 'Aud B', colorIdx: 3 },
-      { code: 'GE 108', title: 'Ethics', time: '13:00 – 14:30', room: 'Room 102', colorIdx: 4 },
+      { code: 'ENG 102', title: 'Technical Communication', time: '09:00 – 10:30', room: 'Aud B', colorIdx: 3 },
+      { code: 'PHIL 101', title: 'Ethics & Modern Society', time: '13:00 – 14:30', room: 'Room 102', colorIdx: 4 },
     ]},
     { day: 'Wed', dayFull: 'Wednesday', items: [
-      { code: 'CC 104', title: 'Data Structures and Algorithms', time: '08:30 – 10:00', room: 'IT Lab 1', colorIdx: 0 },
-      { code: 'IS 103', title: 'Information Management (Database 1)', time: '10:30 – 12:00', room: 'Hall 3', colorIdx: 1 },
-      { code: 'CC 105', title: 'Discrete Mathematics', time: '13:30 – 15:00', room: 'Room 204', colorIdx: 2 },
+      { code: 'CS 101', title: 'Data Structures & Algorithms', time: '08:30 – 10:00', room: 'Lab 1', colorIdx: 0 },
+      { code: 'MATH 201', title: 'Linear Algebra & Matrices', time: '10:30 – 12:00', room: 'Hall 3', colorIdx: 1 },
+      { code: 'IS 103', title: 'Database Systems & SQL', time: '13:30 – 15:00', room: 'Room 204', colorIdx: 2 },
     ]},
     { day: 'Thu', dayFull: 'Thursday', items: [
-      { code: 'GE 107', title: 'Science, Technology, and Society', time: '09:00 – 10:30', room: 'Aud B', colorIdx: 3 },
-      { code: 'GE 108', title: 'Ethics', time: '13:00 – 14:30', room: 'Room 102', colorIdx: 4 },
+      { code: 'ENG 102', title: 'Technical Communication', time: '09:00 – 10:30', room: 'Aud B', colorIdx: 3 },
+      { code: 'PHIL 101', title: 'Ethics & Modern Society', time: '13:00 – 14:30', room: 'Room 102', colorIdx: 4 },
     ]},
     { day: 'Fri', dayFull: 'Friday', items: [
-      { code: 'PATHFit 3', title: 'Physical Activities in Dance/Sports', time: '08:00 – 10:00', room: 'Gymnasium', colorIdx: 5 },
-      { code: 'GE-Elec 1', title: 'Living in the IT Era', time: '13:30 – 15:30', room: 'IT Room 3', colorIdx: 6 },
+      { code: 'PE 103', title: 'Physical Wellness & Training', time: '08:00 – 10:00', room: 'Gymnasium', colorIdx: 5 },
+      { code: 'IT 205', title: 'Web Systems & Cloud Services', time: '13:30 – 15:30', room: 'IT Room 3', colorIdx: 6 },
     ]},
-  ];
-
-  // Group curriculum by year for horizontal pathway showcase
-  const curriculumYears = [
-    {
-      year: 1,
-      title: 'First Year: Foundations',
-      description: 'Computing fundamentals, programming basics, and general education core.',
-      courses: DMMMSU_NLUC_BSIS_CURRICULUM.filter(c => c.yearLevel === 1).slice(0, 4),
-    },
-    {
-      year: 2,
-      title: 'Second Year: Data & Architecture',
-      description: 'Algorithms, database management, discrete mathematics, and emerging technologies.',
-      courses: DMMMSU_NLUC_BSIS_CURRICULUM.filter(c => c.yearLevel === 2).slice(0, 4),
-    },
-    {
-      year: 3,
-      title: 'Third Year: Systems & Strategy',
-      description: 'Systems analysis, business process management, data mining, and networking.',
-      courses: DMMMSU_NLUC_BSIS_CURRICULUM.filter(c => c.yearLevel === 3).slice(0, 4),
-    },
-    {
-      year: 4,
-      title: 'Fourth Year: Capstone & Practicum',
-      description: 'Senior capstone research, IT audit, and 486-hour industry internship.',
-      courses: DMMMSU_NLUC_BSIS_CURRICULUM.filter(c => c.yearLevel === 4),
-    },
   ];
 
   return (
@@ -118,8 +93,8 @@ export const LandingPage: React.FC = () => {
             <a href="#timetable-preview" className="hover:text-fg transition-colors">
               Timetable
             </a>
-            <a href="#curriculum-pathway" className="hover:text-fg transition-colors">
-              Curriculum
+            <a href="#for-everyone" className="hover:text-fg transition-colors">
+              Who It is For
             </a>
             <a href="#method" className="hover:text-fg transition-colors">
               How it Works
@@ -156,21 +131,16 @@ export const LandingPage: React.FC = () => {
         {/* Hero Section: Left ORAS + Right HUGE Live Local Clock */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-14 sm:pt-16 sm:pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: ORAS Kinetic Branding & Live Quote */}
+            {/* Left Column: Pure Bold ORAS Typography & Live Quote */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="lg:col-span-7 space-y-6 text-left"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                <h1 className="text-7xl sm:text-9xl font-black tracking-[0.16em] text-fg uppercase font-sans leading-none">
-                  ORAS
-                </h1>
-                <div className="pt-2">
-                  <OrasMascot size="sm" withSpeechBubble="Plan your hours, protect your peace!" />
-                </div>
-              </div>
+              <h1 className="text-7xl sm:text-9xl font-black tracking-[0.16em] text-fg uppercase font-sans leading-none">
+                ORAS
+              </h1>
 
               {/* Contemplative Quotes Ticker (Unitalicized, very slow transition) */}
               <div className="h-20 flex items-center overflow-hidden">
@@ -193,25 +163,15 @@ export const LandingPage: React.FC = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-2">
+              {/* Single Bold Focused Action CTA */}
+              <div className="pt-2">
                 <motion.div whileTap={{ scale: 0.96 }} whileHover={{ y: -0.5 }}>
                   <Link
                     to="/schedules"
-                    className="inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-bold px-6 py-3 rounded-xl bg-accent text-accent-contrast hover:bg-accent-hover shadow-card transition-all"
+                    className="inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-bold px-7 py-3.5 rounded-xl bg-accent text-accent-contrast hover:bg-accent-hover shadow-card transition-all"
                   >
                     <span>Launch Timetable Planner</span>
-                    <ArrowRight size={14} />
-                  </Link>
-                </motion.div>
-
-                <motion.div whileTap={{ scale: 0.96 }} whileHover={{ y: -0.5 }}>
-                  <Link
-                    to="/about"
-                    className="inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold px-5 py-3 rounded-xl bg-surface border border-border-default hover:border-border-strong text-fg hover:bg-surface-secondary shadow-soft transition-colors"
-                  >
-                    <Compass size={14} className="text-accent" />
-                    <span>Why ORAS was Built</span>
+                    <ArrowRight size={15} />
                   </Link>
                 </motion.div>
               </div>
@@ -234,10 +194,10 @@ export const LandingPage: React.FC = () => {
           <div className="mb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-fg tracking-tight">
-                BS Information Systems · 2nd Year Timetable
+                Weekly Class Timetable
               </h2>
               <p className="text-xs text-fg-muted font-mono mt-0.5">
-                DMMMSU-NLUC Bacnotan · 20.0 Units · Solid Harmonic Theme Blocks
+                Full 5-Day View · Solid Harmonic Theme Blocks · Half-Open Interval Math
               </p>
             </div>
             <Link
@@ -324,53 +284,59 @@ export const LandingPage: React.FC = () => {
           </motion.div>
         </section>
 
-        {/* Section 3: Horizontal Pinned Curriculum Pathway (DMMMSU-NLUC BSIS) */}
-        <section id="curriculum-pathway" className="border-t border-border-subtle bg-surface-secondary/40 py-12 sm:py-16">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
-            <div className="max-w-xl">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-fg">
-                DMMMSU-NLUC BSIS Curricular Pathway
+        {/* Section 3: Universal Audience - Built for Everyone */}
+        <section id="for-everyone" className="border-t border-border-subtle bg-surface-secondary/40 py-12 sm:py-16">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+            <div className="max-w-2xl">
+              <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-fg">
+                Designed for Everyone Who Values Their Hours
               </h2>
-              <p className="text-xs sm:text-sm text-fg-muted mt-1 font-medium">
-                Every subject from First Year to Fourth Year is preloaded for instant search and schedule validation.
+              <p className="text-xs sm:text-sm text-fg-muted mt-2 font-medium leading-relaxed">
+                Whether you are in college, graduate school, balancing night shifts, or organizing weekly freelancing hours, ORAS provides deterministic timetable clarity with zero barriers.
               </p>
             </div>
 
-            {/* 4-Year Pathway Grid */}
+            {/* Inclusive 4-Persona Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {curriculumYears.map((yr) => (
-                <div
-                  key={yr.year}
-                  className="p-5 rounded-xl border border-border-default bg-surface shadow-soft space-y-3 flex flex-col justify-between"
-                >
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-wider">
-                      Year 0{yr.year}
-                    </span>
-                    <h3 className="text-sm font-bold text-fg">{yr.title}</h3>
-                    <p className="text-xs text-fg-muted leading-relaxed">
-                      {yr.description}
-                    </p>
-                  </div>
-
-                  {/* Course Pills */}
-                  <div className="space-y-1 pt-2 border-t border-border-subtle">
-                    {yr.courses.map((c) => (
-                      <div
-                        key={c.code}
-                        className="flex items-center justify-between text-xs py-1"
-                      >
-                        <span className="font-bold text-fg truncate text-[11px]">
-                          {c.code}
-                        </span>
-                        <span className="text-[10px] font-mono text-fg-muted shrink-0">
-                          {c.units}.0u
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+              <div className="p-6 rounded-2xl border border-border-default bg-surface shadow-soft space-y-3">
+                <div className="w-9 h-9 rounded-xl bg-accent-surface text-accent flex items-center justify-center font-bold">
+                  <GraduationCap size={18} />
                 </div>
-              ))}
+                <h3 className="text-sm font-bold text-fg">Students Everywhere</h3>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  State universities, private colleges, and community schools. Plug in course slips, test section options, and banish 4-hour dead campus gaps.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl border border-border-default bg-surface shadow-soft space-y-3">
+                <div className="w-9 h-9 rounded-xl bg-accent-surface text-accent flex items-center justify-center font-bold">
+                  <Users size={18} />
+                </div>
+                <h3 className="text-sm font-bold text-fg">Irregular Students</h3>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  Taking prerequisite subjects alongside higher-year majors? Test combinations across different batches without accidental 15-minute overlaps.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl border border-border-default bg-surface shadow-soft space-y-3">
+                <div className="w-9 h-9 rounded-xl bg-accent-surface text-accent flex items-center justify-center font-bold">
+                  <Briefcase size={18} />
+                </div>
+                <h3 className="text-sm font-bold text-fg">Working & Commuters</h3>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  Consolidate classes into fewer days, protect morning hours for part-time work, and keep your commuting schedule predictable.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl border border-border-default bg-surface shadow-soft space-y-3">
+                <div className="w-9 h-9 rounded-xl bg-accent-surface text-accent flex items-center justify-center font-bold">
+                  <ShieldCheck size={18} />
+                </div>
+                <h3 className="text-sm font-bold text-fg">100% Free & Private</h3>
+                <p className="text-xs text-fg-muted leading-relaxed">
+                  Zero payments. Zero ads. Zero tracking cookies. Your schedule lives safely in your browser session with full export rights.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -382,7 +348,7 @@ export const LandingPage: React.FC = () => {
               How ORAS Operates
             </h2>
             <p className="text-xs sm:text-sm text-fg-muted mt-1 font-medium">
-              Three deliberate operations designed for student autonomy.
+              Three deliberate operations designed for complete user autonomy.
             </p>
           </div>
 
@@ -395,9 +361,9 @@ export const LandingPage: React.FC = () => {
               className="p-6 rounded-xl border border-border-default bg-surface shadow-soft space-y-2.5"
             >
               <span className="text-xs font-mono font-bold text-accent">01 / ENLIST</span>
-              <h3 className="text-sm font-bold text-fg">Enter or Autocomplete Subjects</h3>
+              <h3 className="text-sm font-bold text-fg">Enter or Click Empty Slots</h3>
               <p className="text-xs text-fg-muted leading-relaxed">
-                Type course codes like <code>CC 104</code> or <code>IS 103</code>. Instant autocomplete fills course titles and unit counts, snapping session times strictly to :00 or :30.
+                Click directly on any blank calendar slot to schedule a class, or enter custom courses with auto-snapping strictly on full hours and half hours.
               </p>
             </motion.div>
 
@@ -467,10 +433,10 @@ export const LandingPage: React.FC = () => {
           <div className="col-span-2 space-y-2">
             <OrasLogo size="sm" />
             <p className="text-[11px] text-fg-muted max-w-sm leading-relaxed mt-2">
-              A minimalist, typography-first timetable planner for university students. Designed for clarity, speed, and zero friction.
+              A minimalist, typography-first timetable planner for university students and professionals everywhere.
             </p>
             <div className="text-[10px] font-mono text-fg-muted pt-1">
-              DMMMSU-NLUC BSIS Curriculum · Bacnotan, La Union
+              100% Free · Zero Tracking · Open Source
             </div>
           </div>
 
@@ -513,10 +479,10 @@ export const LandingPage: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-fg-muted">Bacnotan, La Union</span>
+                <span className="text-fg-muted">React 19 & Django 5</span>
               </li>
               <li>
-                <span className="text-fg-muted">React 19 & Django 5</span>
+                <span className="text-fg-muted">Deterministic Engine</span>
               </li>
               <li>
                 <span className="text-fg-muted">MIT License</span>
@@ -526,7 +492,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="max-w-6xl mx-auto pt-6 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-fg-muted">
-          <span>&copy; {new Date().getFullYear()} ORAS Planner. Crafted for university students.</span>
+          <span>&copy; {new Date().getFullYear()} ORAS Planner. Built for students and time managers everywhere.</span>
           <div className="flex items-center gap-4">
             <Link to="/about" className="hover:text-fg transition-colors">About</Link>
             <Link to="/settings" className="hover:text-fg transition-colors">Settings</Link>

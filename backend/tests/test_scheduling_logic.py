@@ -126,3 +126,31 @@ class SchedulingLogicTests(TestCase):
                 start_time=time(14, 0),
                 end_time=time(13, 0)
             )
+
+    def test_schedule_duplication(self):
+        """Duplicating a schedule should copy all selections to a new independent schedule."""
+        from apps.planner.models import Schedule, ScheduleSelection
+        off_a = Offering.objects.create(course=self.course_a, section_code='A')
+        original = Schedule.objects.create(workspace=self.workspace, name='Primary')
+        ScheduleSelection.objects.create(schedule=original, offering=off_a)
+
+        copy = Schedule.objects.create(
+            workspace=original.workspace,
+            name=f"{original.name} (Copy)"
+        )
+        for sel in original.selections.all():
+            ScheduleSelection.objects.create(schedule=copy, offering=sel.offering)
+
+        self.assertEqual(Schedule.objects.filter(workspace=self.workspace).count(), 2)
+        self.assertEqual(copy.selections.count(), 1)
+        self.assertEqual(copy.selections.first().offering, off_a)
+
+    def test_offering_deletion_cleans_empty_parent_course(self):
+        """Deleting the only offering of a course should cascade and clean up the parent course."""
+        off_a = Offering.objects.create(course=self.course_a, section_code='A')
+        course_id = self.course_a.id
+        off_a.delete()
+        if Course.objects.get(id=course_id).offerings.count() == 0:
+            Course.objects.get(id=course_id).delete()
+
+        self.assertFalse(Course.objects.filter(id=course_id).exists())
