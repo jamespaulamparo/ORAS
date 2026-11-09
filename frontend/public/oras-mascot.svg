@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="clockBodyGrad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#fff8f0"/>
+      <stop offset="100%" stop-color="#faeedd"/>
+    </radialGradient>
+    <linearGradient id="brassGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8a855"/>
+      <stop offset="100%" stop-color="#c4812d"/>
+    </linearGradient>
+    <linearGradient id="capGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2c3038"/>
+      <stop offset="100%" stop-color="#15171c"/>
+    </linearGradient>
+    <filter id="chibiGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#c4812d" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Top Watch Loop & Brass Winder Pin -->
+  <g id="topWinder">
+    <ellipse cx="100" cy="28" rx="14" ry="11" fill="none" stroke="url(#brassGrad)" stroke-width="4.5"/>
+    <rect x="94" y="34" width="12" height="10" rx="3" fill="url(#brassGrad)"/>
+  </g>
+
+  <!-- Main Round Chibi Body (Outer Brass Bezel + Ivory Dial Face) -->
+  <circle cx="100" cy="112" r="66" fill="url(#brassGrad)" filter="url(#chibiGlow)"/>
+  <circle cx="100" cy="112" r="60" fill="url(#clockBodyGrad)"/>
+  <circle cx="100" cy="112" r="54" fill="none" stroke="#ecd7be" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+  <!-- Hour Marker Dots -->
+  <circle cx="100" cy="66" r="2.5" fill="#c4812d"/>
+  <circle cx="146" cy="112" r="2.5" fill="#c4812d"/>
+  <circle cx="100" cy="158" r="2.5" fill="#c4812d"/>
+  <circle cx="54" cy="112" r="2.5" fill="#c4812d"/>
+
+  <!-- Rosy Blush Cheeks -->
+  <ellipse cx="72" cy="120" rx="7" ry="4.5" fill="#ff9eb0" opacity="0.6"/>
+  <ellipse cx="128" cy="120" rx="7" ry="4.5" fill="#ff9eb0" opacity="0.6"/>
+
+  <!-- Big Sparkly Chibi Eyes -->
+  <!-- Left Eye -->
+  <g id="leftEye">
+    <ellipse cx="80" cy="106" rx="9" ry="12" fill="#1c1f24"/>
+    <circle cx="83" cy="102" r="4.5" fill="#ffffff"/>
+    <circle cx="77" cy="112" r="2" fill="#ffffff"/>
+  </g>
+  <!-- Right Eye (Cheerful/Winking Sparkle) -->
+  <g id="rightEye">
+    <ellipse cx="120" cy="106" rx="9" ry="12" fill="#1c1f24"/>
+    <circle cx="123" cy="102" r="4.5" fill="#ffffff"/>
+    <circle cx="117" cy="112" r="2" fill="#ffffff"/>
+  </g>
+
+  <!-- Happy Smiling Open Mouth with Tongue -->
+  <path d="M92 121 Q100 133 108 121 Z" fill="#d94b63"/>
+  <path d="M94 125 Q100 132 106 125 Z" fill="#ff8da1"/>
+
+  <!-- Clock Hand Bowtie / Chest Hands pointing to 10:10 (Symbol of Happiness & Balance) -->
+  <line x1="100" y1="138" x2="86" y2="132" stroke="#c4812d" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="138" x2="114" y2="130" stroke="#c4812d" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="100" cy="138" r="3" fill="#c4812d"/>
+
+  <!-- Cute Chibi Waving Hand Left -->
+  <g id="leftHand" transform="rotate(-15 42 120)">
+    <ellipse cx="40" cy="112" rx="9" ry="7" fill="#ffffff" stroke="#c4812d" stroke-width="2.5"/>
+    <circle cx="45" cy="108" r="3" fill="#ffffff"/>
+  </g>
+
+  <!-- Cute Chibi Waving Hand Right (Waving High!) -->
+  <g id="rightHand" transform="rotate(25 156 95)">
+    <ellipse cx="160" cy="94" rx="10" ry="8" fill="#ffffff" stroke="#c4812d" stroke-width="2.5"/>
+    <circle cx="155" cy="90" r="3" fill="#ffffff"/>
+    <!-- Motion lines -->
+    <path d="M174 86 Q178 92 174 98" fill="none" stroke="#c4812d" stroke-width="2" stroke-linecap="round"/>
+    <path d="M180 88 Q184 93 180 97" fill="none" stroke="#c4812d" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Cute Little Chibi Feet with Brass Tips -->
+  <ellipse cx="84" cy="176" rx="9" ry="6" fill="#ffffff" stroke="#c4812d" stroke-width="2"/>
+  <ellipse cx="116" cy="176" rx="9" ry="6" fill="#ffffff" stroke="#c4812d" stroke-width="2"/>
+
+  <!-- Tilted Academic Graduation Mortarboard (Scholarly & Playful) -->
+  <g id="mortarboard" transform="rotate(-12 100 56)">
+    <!-- Skullcap -->
+    <ellipse cx="100" cy="54" rx="20" ry="8" fill="#1b1e24"/>
+    <!-- Diamond Cap Top -->
+    <polygon points="100,32 136,44 100,56 64,44" fill="url(#capGrad)"/>
+    <!-- Golden Button & Dangling Tassel -->
+    <circle cx="100" cy="44" r="2.5" fill="#f5c258"/>
+    <path d="M100 44 Q116 48 122 62" fill="none" stroke="#f5c258" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="122" cy="64" r="3" fill="#f5c258"/>
+  </g>
+</svg>

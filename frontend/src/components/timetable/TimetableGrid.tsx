@@ -15,6 +15,7 @@ interface TimetableGridProps {
   offerings: Offering[];
   conflicts?: ConflictInfo[];
   onSelectOffering?: (offering: Offering) => void;
+  onSelectEmptySlot?: (slot: { day_of_week: number; start_time: string; end_time: string }) => void;
   showWeekends?: boolean;
   timeFormat12h?: boolean;
 }
@@ -23,6 +24,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
   offerings,
   conflicts = [],
   onSelectOffering,
+  onSelectEmptySlot,
   showWeekends = false,
   timeFormat12h = true,
 }) => {
@@ -46,6 +48,30 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
 
   const totalGridHeight = (bounds.endHour - bounds.startHour) * 60;
 
+  const handleColumnClick = (e: React.MouseEvent<HTMLDivElement>, dayNum: number) => {
+    if (!onSelectEmptySlot) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
+    const ratio = Math.max(0, Math.min(1, clickY / totalGridHeight));
+    const clickedMinutesFromStart = Math.floor(ratio * bounds.totalMinutes);
+    const rawMinutesOfDay = bounds.startHour * 60 + clickedMinutesFromStart;
+
+    // Snap down to nearest 30-minute increment (:00 or :30)
+    const snappedStartMin = Math.floor(rawMinutesOfDay / 30) * 30;
+    // Default duration is 1 hour (60 minutes)
+    const snappedEndMin = Math.min(22 * 60, snappedStartMin + 60);
+
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    const startStr = `${pad(Math.floor(snappedStartMin / 60))}:${pad(snappedStartMin % 60)}`;
+    const endStr = `${pad(Math.floor(snappedEndMin / 60))}:${pad(snappedEndMin % 60)}`;
+
+    onSelectEmptySlot({
+      day_of_week: dayNum,
+      start_time: startStr,
+      end_time: endStr,
+    });
+  };
+
   const renderClassBlock = (pos: SessionPosition, index: number, isSingleDay: boolean) => {
     const { offering, session, topPct, heightPct, hasConflict, conflictDetails } = pos;
     // Theme-derived course color style (solid opaque background)
@@ -55,7 +81,10 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
     return (
       <div
         key={`${offering.id}-${session.id || session.day_of_week}-${session.start_time}`}
-        onClick={() => onSelectOffering && onSelectOffering(offering)}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (onSelectOffering) onSelectOffering(offering);
+        }}
         style={{
           top: `${topPct}%`,
           height: `${heightPct}%`,
@@ -239,7 +268,9 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({
             {displayedDays.map((dayNum) => (
               <div
                 key={dayNum}
-                className="flex-1 relative border-r border-border-subtle last:border-r-0"
+                onClick={(e) => handleColumnClick(e, dayNum)}
+                className="flex-1 relative border-r border-border-subtle last:border-r-0 cursor-pointer hover:bg-surface-secondary/20 transition-colors"
+                title="Click blank time slot to add a 1-hour class"
               >
                 {/* Horizontal hour grid lines */}
                 {hours.map((hour, idx) => {

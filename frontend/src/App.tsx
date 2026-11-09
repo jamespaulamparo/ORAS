@@ -4,8 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './features/auth/AuthContext';
 import { ThemeProvider } from './features/settings/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 import { AppLayout } from './components/layout/AppLayout';
 import { LandingPage } from './features/landing/LandingPage';
+import { AboutPage } from './features/about/AboutPage';
 import { AuthPage } from './features/auth/AuthPage';
 import { SchedulesPage } from './features/schedules/SchedulesPage';
 import { BuilderPage } from './features/generator/BuilderPage';
@@ -28,9 +30,11 @@ export const App: React.FC = () => {
         <AuthProvider>
           <ToastProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <Routes>
                 {/* Landing / Homepage before entering the workspace */}
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<AboutPage />} />
 
                 {/* Workspace Application routes */}
                 <Route element={<AppLayout />}>

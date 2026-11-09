@@ -6,6 +6,7 @@ import { TimetableGrid } from '../../components/timetable/TimetableGrid';
 import { EnrolledCoursesTable } from '../../components/timetable/EnrolledCoursesTable';
 import { ClassFormModal } from '../../components/forms/ClassFormModal';
 import { SettingsModal } from '../settings/SettingsModal';
+import { OrasMascot } from '../../components/ui/OrasMascot';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
 import { useTheme } from '../settings/ThemeContext';
@@ -44,6 +45,34 @@ export const SchedulesPage: React.FC = () => {
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedOffering, setSelectedOffering] = useState<Offering | null>(null);
+  const [slotPrefill, setSlotPrefill] = useState<{ day_of_week: number; start_time: string; end_time: string } | null>(null);
+
+  // Listen to events from the dedicated ScheduleWorkspaceSidebar
+  React.useEffect(() => {
+    const handleOpenAdd = () => {
+      setSelectedOffering(null);
+      setSlotPrefill(null);
+      setIsClassModalOpen(true);
+    };
+    const handleEditClass = (e: any) => {
+      setSelectedOffering(e.detail);
+      setSlotPrefill(null);
+      setIsClassModalOpen(true);
+    };
+    const handleOpenSettings = () => {
+      setIsSettingsOpen(true);
+    };
+
+    window.addEventListener('oras:open-add-class', handleOpenAdd);
+    window.addEventListener('oras:edit-class', handleEditClass);
+    window.addEventListener('oras:open-settings', handleOpenSettings);
+
+    return () => {
+      window.removeEventListener('oras:open-add-class', handleOpenAdd);
+      window.removeEventListener('oras:edit-class', handleEditClass);
+      window.removeEventListener('oras:open-settings', handleOpenSettings);
+    };
+  }, []);
 
   // Fetch current workspace
   const { data: workspace, isLoading } = useQuery<Workspace>({
@@ -139,6 +168,13 @@ export const SchedulesPage: React.FC = () => {
 
   const handleSelectOffering = (off: Offering) => {
     setSelectedOffering(off);
+    setSlotPrefill(null);
+    setIsClassModalOpen(true);
+  };
+
+  const handleEmptySlotClick = (slot: { day_of_week: number; start_time: string; end_time: string }) => {
+    setSelectedOffering(null);
+    setSlotPrefill(slot);
     setIsClassModalOpen(true);
   };
 
@@ -303,13 +339,11 @@ export const SchedulesPage: React.FC = () => {
           Loading timetable...
         </div>
       ) : displayedOfferings.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border-default p-12 text-center bg-surface/50">
-          <div className="w-10 h-10 rounded-full bg-surface-secondary text-fg-muted flex items-center justify-center mx-auto mb-3">
-            <Calendar size={20} />
-          </div>
-          <h3 className="text-sm font-bold text-fg">Your timetable is empty</h3>
-          <p className="text-xs text-fg-muted max-w-sm mx-auto mt-1 mb-4">
-            Add your subjects and sections manually or run the generator to visualize your weekly classes.
+        <div className="rounded-2xl border border-dashed border-border-default p-10 text-center bg-surface/50 flex flex-col items-center">
+          <OrasMascot size="md" withSpeechBubble="Your timetable is fresh and ready! Click any empty time slot or + Add Class." />
+          <h3 className="text-sm font-bold text-fg mt-4">No classes scheduled yet</h3>
+          <p className="text-xs text-fg-muted max-w-sm mx-auto mt-1 mb-5 leading-relaxed">
+            Click directly on any blank calendar slot to schedule a 1-hour class, or launch the automated generator.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Button
@@ -317,6 +351,7 @@ export const SchedulesPage: React.FC = () => {
               size="sm"
               onClick={() => {
                 setSelectedOffering(null);
+                setSlotPrefill(null);
                 setIsClassModalOpen(true);
               }}
             >
@@ -344,11 +379,12 @@ export const SchedulesPage: React.FC = () => {
             <span className="text-xs font-mono text-fg-muted">oras.schedule</span>
           </div>
 
-          {/* Timetable Grid with fixed 8am/5pm clipping & 100% width responsive layout */}
+          {/* Timetable Grid with fixed 8am/5pm clipping, 100% width, and click-to-schedule */}
           <TimetableGrid
             offerings={displayedOfferings}
             conflicts={conflictData?.conflicts || []}
             onSelectOffering={handleSelectOffering}
+            onSelectEmptySlot={handleEmptySlotClick}
             showWeekends={showWeekends}
             timeFormat12h={timeFormat12h}
           />
@@ -365,14 +401,24 @@ export const SchedulesPage: React.FC = () => {
       {/* Class Form Modal */}
       <ClassFormModal
         isOpen={isClassModalOpen}
-        onClose={() => setIsClassModalOpen(false)}
-        onSubmit={handleFormSubmit}
+        onClose={() => {
+          setIsClassModalOpen(false);
+          setSlotPrefill(null);
+        }}
+        onSubmit={async (formData) => {
+          await handleFormSubmit(formData);
+          setSlotPrefill(null);
+        }}
         onDelete={(id) => deleteOfferingMutation.mutateAsync(id)}
         initialData={
           selectedOffering
             ? {
                 course: workspace?.courses.find(c => c.id === selectedOffering.course),
                 offering: selectedOffering,
+              }
+            : slotPrefill
+            ? {
+                slotPrefill,
               }
             : null
         }

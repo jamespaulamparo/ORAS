@@ -23,6 +23,11 @@ interface ClassFormModalProps {
   initialData?: {
     course?: Course;
     offering?: Offering;
+    slotPrefill?: {
+      day_of_week: number;
+      start_time: string;
+      end_time: string;
+    };
   } | null;
 }
 
@@ -106,9 +111,20 @@ export const ClassFormModal: React.FC<ClassFormModalProps> = ({
       setSectionCode('A');
       setInstructor('');
       setDefaultRoom('');
-      setSessions([
-        { day_of_week: 1, start_time: '08:30', end_time: '10:00', room: '' },
-      ]);
+      if (initialData?.slotPrefill) {
+        setSessions([
+          {
+            day_of_week: initialData.slotPrefill.day_of_week,
+            start_time: initialData.slotPrefill.start_time,
+            end_time: initialData.slotPrefill.end_time,
+            room: '',
+          },
+        ]);
+      } else {
+        setSessions([
+          { day_of_week: 1, start_time: '08:30', end_time: '10:00', room: '' },
+        ]);
+      }
     }
     setError(null);
   }, [initialData, isOpen]);
@@ -231,7 +247,7 @@ export const ClassFormModal: React.FC<ClassFormModalProps> = ({
       courseCode &&
       (c.code.toLowerCase().includes(courseCode.toLowerCase()) ||
         c.title.toLowerCase().includes(courseCode.toLowerCase()))
-  ).slice(0, 5);
+  ).slice(0, 8);
 
   return (
     <Modal
@@ -265,22 +281,35 @@ export const ClassFormModal: React.FC<ClassFormModalProps> = ({
               autoFocus
             />
 
-            {/* Suggestions Dropdown */}
+            {/* Suggestions Dropdown (DMMMSU-NLUC BSIS Curriculum) */}
             {showSuggestions && filteredSuggestions.length > 0 && (
-              <div className="absolute z-50 left-0 right-0 mt-1 bg-surface border border-border-default rounded-md shadow-card overflow-hidden">
-                <div className="px-2 py-1 text-[10px] text-fg-muted font-semibold uppercase tracking-wider bg-surface-secondary border-b border-border-subtle">
-                  Common University Courses
+              <div className="absolute z-50 left-0 right-0 mt-1 bg-surface border border-border-default rounded-lg shadow-card overflow-hidden max-h-60 overflow-y-auto">
+                <div className="px-2.5 py-1 text-[10px] text-fg-muted font-bold uppercase tracking-wider bg-surface-secondary border-b border-border-subtle flex items-center justify-between">
+                  <span>DMMMSU BSIS Curriculum</span>
+                  <span>Units</span>
                 </div>
                 {filteredSuggestions.map((s) => (
                   <button
                     key={s.code}
                     type="button"
                     onClick={() => handleSelectSuggestion(s)}
-                    className="w-full text-left px-3 py-1.5 hover:bg-surface-secondary text-xs flex items-center justify-between transition-colors"
+                    className="w-full text-left px-3 py-2 hover:bg-surface-secondary text-xs flex items-center justify-between transition-colors border-b border-border-subtle/50 last:border-b-0 group"
                   >
-                    <span className="font-bold text-fg">{s.code}</span>
-                    <span className="text-[11px] text-fg-muted truncate max-w-[140px]">
-                      {s.title}
+                    <div className="truncate pr-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-fg group-hover:text-accent transition-colors">
+                          {s.code}
+                        </span>
+                        <span className="text-[9px] px-1 rounded bg-surface-secondary text-fg-muted font-mono">
+                          Y{s.yearLevel}·S{s.semester}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-fg-muted truncate block max-w-[200px]">
+                        {s.title}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[11px] font-semibold text-fg-secondary shrink-0">
+                      {s.units}.0u
                     </span>
                   </button>
                 ))}

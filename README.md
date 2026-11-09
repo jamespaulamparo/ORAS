@@ -17,9 +17,13 @@ Students often struggle with confusing section offerings, overlapping prerequisi
 ### Key Highlights
 - **Zero Friction & Anonymous by Default:** No registration or login required. Your classes persist automatically in your browser session.
 - **Strict Half-Hour Increments:** Class times snap to `:00` and `:30` (e.g. `08:30 – 10:00`), preventing input typos and matching university scheduling periods.
+- **DMMMSU-NLUC BSIS Curriculum Grounding:** Preloaded with the complete 4-year curriculum of Bachelor of Science in Information Systems (BSIS) from Don Mariano Marcos Memorial State University – North La Union Campus (2026), including all General Education, computing majors, and electives with instant autocomplete.
+- **Dual Sidebar Architecture:** Inside the Schedule Workspace (`/schedules`), an Ellipsus-inspired focused tool rail puts subject management, diagnostic conflict indicators, view toggles, and exports directly at your fingertips, while the main sidebar handles general app navigation.
+- **Micro-Animations & Scroll Dynamics:** Framer Motion scroll-linked timepiece/sandglass animation, rotating academic reflections ticker every 3.8s, and tactile button tap feedback (`whileTap={{ scale: 0.97 }}`).
+- **Dedicated Academic Research Page (`/about`):** Detailed research on the enrollment scramble, irregular student dilemmas, transit gap penalties, and why deterministic typographic software outperforms AI chatbots.
 - **Mathematical Half-Open Interval Validation:** Classes ending at 10:30 and starting at 10:30 do not trigger false conflicts. Overlaps are highlighted with exact diagnostic messages.
-- **16 Ellipsus-Inspired Themes:** 8 rich Dark themes (Leatherbound, Red Velvet, Ultra Dark, Midnight, Graphite, Espresso, Evergreen, Sepia) and 8 Light themes (Paper, Maple, Pumpkin Spice, Valentine, Roseglow, Sage, Sandstone, Minimal). Themes dynamically recolor your course blocks to maintain perfect aesthetic harmony.
-- **Enrolled Classes Summary Table:** Below the 2D timetable grid, a color-coded summary lists all subjects, section codes, unit counts, meeting times, and rooms.
+- **16 Ellipsus-Inspired Themes:** 8 rich Dark themes (Leatherbound, Red Velvet, Ultra Dark, Midnight, Graphite, Espresso, Evergreen, Sepia) and 8 Light themes (Paper, Maple, Pumpkin Spice, Valentine, Roseglow, Sage, Sandstone, Minimal).
+- **Enrolled Classes Summary Table:** Color-coded summary below the timetable grid listing subject codes, titles, section codes, unit counts, meeting times, and rooms.
 - **Schedule-Only Export (PNG & PDF):** Export strictly your weekly timetable as a high-resolution PNG image or clean printable PDF without website navigation chrome.
 - **Fully Responsive:** 100% width on mobile screens with zero awkward horizontal scrolling, plus a 1-click single-day inspector view.
 
